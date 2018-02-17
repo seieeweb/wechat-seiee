@@ -71,6 +71,11 @@
         <div class="title m-b-md">
             绑定成功
         </div>
+
+        <div class="links">
+            <a href="#">校园卡</a>
+            <a href="#">课程表</a>
+        </div>
     </div>
 </div>
 </body>

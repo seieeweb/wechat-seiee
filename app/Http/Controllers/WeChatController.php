@@ -59,15 +59,15 @@ class WeChatController extends BaseController
                 return "{$user->name} (校园卡号 {$card->cardNo})\n余额: {$card->cardBalance} 元\n过渡余额: {$card->transBalance} 元";
             } elseif (str_is('*课程*', $content) || str_is('*课表*', $content) || str_is('*课程表*', $content)) {
                 $now = Carbon::now();
-                //$week = $now->diffInWeeks(Carbon::parse(env('SEMESTER_START')));
-                //$day = Carbon::now()->dayOfWeek;
-                $week = 1;
-                $day = 2;
+                $week = $now->diffInWeeks(Carbon::parse(env('SEMESTER_START')));
+                $day = Carbon::now()->dayOfWeek;
 
                 $tomorrow = max($day - 6, 0) * (-7) + $day + 1;
                 $classes = $jaccount_object->getClasses($week, [$day, $tomorrow]);
 
-                $today_class = "今日 (第{$week}周 周{$day}) 课程:";
+                $weekday_str = ['一', '二', '三', '四', '五', '六', '日'];
+
+                $today_class = "今日 (第{$week}周 周{$weekday_str[$day]}) 课程:";
                 foreach ($classes[$day] as $class) {
                     $teacher = $class['teachers'][0]->name;
                     $classroom = $class['classroom'];
@@ -75,7 +75,7 @@ class WeChatController extends BaseController
                     $today_class .= "\n{$class['name']} @ {$classroom} ($teacher)\n第 {$class_time} 节";
                 }
 
-                $tomorrow_class = "明日 (第{$week}周 周{$tomorrow}) 课程:";
+                $tomorrow_class = "明日 (第{$week}周 周{$weekday_str[$tomorrow]}) 课程:";
                 foreach ($classes[$tomorrow] as $class) {
                     $teacher = $class['teachers'][0]->name;
                     $classroom = $class['classroom'];
@@ -170,39 +170,7 @@ class JaccountApis
         $data = json_decode(file_get_contents('https://api.sjtu.edu.cn/v1/me/lessons?access_token=' . $this->jaccount->access_token));
         $lessons = $data->entities;
 
-        if ($week == null && $days == []) {
-            return [$lessons];
-        } elseif ($week == null && $days != []) {
-            $ret = [];
-            foreach ($days as $day) {
-                $ret[$day] = [];
-            }
-            foreach ($lessons as $lesson) {
-                foreach ($lesson->classes as $class) {
-                    $ret_class = [];
-                    if (in_array($class->schedule->day, $days)) {
-                        $ret_class[] = $class;
-                    }
-                    if ($ret_class != []) {
-                        $ret[$class->schedule->day][] = array(
-                            'name' => $lesson->name,
-                            'teachers' => $lesson->teachers,
-                            'class' => $ret_class
-                        );
-                    }
-                }
-            }
-        } elseif ($week != null && $days == []) {
-            $ret = [];
-            foreach ($lessons as $lesson) {
-                foreach ($lesson->classes as $class) {
-                    if ($class->schedule->week == $week) {
-                        $ret[] = $lesson;
-                        break;
-                    }
-                }
-            }
-        } elseif ($week != null && $days != []) {
+        if ($week != null && $days != []) {
             $ret = [];
             foreach ($days as $day) {
                 $ret[$day] = [];
@@ -223,9 +191,9 @@ class JaccountApis
                     }
                 }
             }
+            return $ret;
+        } else {
+            return false;
         }
-
-        return $ret;
-
     }
 }
