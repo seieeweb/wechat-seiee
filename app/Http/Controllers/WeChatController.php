@@ -69,25 +69,17 @@ class WeChatController extends BaseController
 
                 $today_class = "今日 (第{$week}周 周{$day}) 课程:";
                 foreach ($classes[$day] as $class) {
-                    $class_time = '';
-                    foreach ($class['class'] as $period) {
-                        $class_time .= $period['schedule']['period'] . ', ';
-                    }
-                    $class_time = substr($class_time, 0, -2);
                     $teacher = $class['teachers'][0]->name;
-                    $classroom = $class['class'][0]['classroom']['name'];
+                    $classroom = $class['classroom'];
+                    $class_time = join(', ', $class['class']);
                     $today_class .= "\n{$class['name']} @ {$classroom} ($teacher)\n第 {$class_time} 节";
                 }
 
                 $tomorrow_class = "明日 (第{$week}周 周{$tomorrow}) 课程:";
                 foreach ($classes[$tomorrow] as $class) {
-                    $class_time = '';
-                    foreach ($class['class'] as $period) {
-                        $class_time .= $period['schedule']['period'] . ', ';
-                    }
-                    $class_time = substr($class_time, 0, -2);
                     $teacher = $class['teachers'][0]->name;
-                    $classroom = $class['class'][0]['classroom']['name'];
+                    $classroom = $class['classroom'];
+                    $class_time = join(', ', $class['class']);
                     $tomorrow_class .= "\n{$class['name']} @ {$classroom} ($teacher)\n第 {$class_time} 节";
                 }
 
@@ -224,7 +216,8 @@ class JaccountApis
                             $ret[$class->schedule->day][$lesson->bsid] = array(
                                 'name' => $lesson->name,
                                 'teachers' => $lesson->teachers,
-                                'class' => [$class->schedule->period]
+                                'class' => [$class->schedule->period],
+                                'classroom' => $class->classroom->name,
                             );;
                         }
                     }
