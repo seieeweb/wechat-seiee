@@ -11,6 +11,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use EasyWeChat\Factory;
 use Log;
 use App\Jaccount;
+use EasyWeChat\Kernel\Messages\Article;
 
 class WeChatController extends BaseController
 {
@@ -56,7 +57,15 @@ class WeChatController extends BaseController
             if (str_is('*校园卡*', $content)) {
                 $card = $jaccount_object->getCardDetail();
                 $user = $jaccount_object->user_detail;
-                return "{$user->name} (校园卡号 {$card->cardNo})\n余额: {$card->cardBalance} 元\n过渡余额: {$card->transBalance} 元";
+
+
+                $article = new Article();
+                $article->title   = '校园卡信息';
+                $article->author  = "{$user->name} (校园卡号 {$card->cardNo})";
+                $article->content = "余额: {$card->cardBalance} 元\n过渡余额: {$card->transBalance} 元";
+
+                return $article;
+                
             } elseif (str_is('*课程*', $content) || str_is('*课表*', $content) || str_is('*课程表*', $content)) {
                 $now = Carbon::now();
                 $week = $now->diffInWeeks(Carbon::parse(env('SEMESTER_START')));
