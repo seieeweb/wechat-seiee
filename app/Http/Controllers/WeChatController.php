@@ -67,30 +67,28 @@ class WeChatController extends BaseController
                 $tomorrow = max($day - 6, 0) * (-7) + $day + 1;
                 $classes = $jaccount_object->getClasses($week, [$day, $tomorrow]);
 
-                return json_encode($classes);
-
                 $today_class = "今日 (第{$week}周 周{$day}) 课程:";
                 foreach ($classes[$day] as $class) {
                     $class_time = '';
-                    foreach ($class->class as $period) {
-                        $class_time .= $period->schedule->period . ', ';
+                    foreach ($class['class'] as $period) {
+                        $class_time .= $period['schedule']['period'] . ', ';
                     }
                     $class_time = substr($class_time, 0, -2);
-                    $teacher = ($class->teachers)[0]->name;
-                    $classroom = ($class->class)[0]->classroom->name;
-                    $today_class .= "\n{$class->name} @ {$classroom} ($teacher)\n第 {$class_time} 节";
+                    $teacher = $class['teachers'][0]['name'];
+                    $classroom = $class['class'][0]['classroom']['name'];
+                    $today_class .= "\n{$class['name']} @ {$classroom} ($teacher)\n第 {$class_time} 节";
                 }
 
-                $tomorrow_class = "明日 (第{$week}周 周{$day}) 课程:";
+                $tomorrow_class = "明日 (第{$week}周 周{$tomorrow}) 课程:";
                 foreach ($classes[$tomorrow] as $class) {
                     $class_time = '';
-                    foreach ($class->class as $period) {
-                        $class_time .= $period->schedule->period . ', ';
+                    foreach ($class['class'] as $period) {
+                        $class_time .= $period['schedule']['period'] . ', ';
                     }
                     $class_time = substr($class_time, 0, -2);
-                    $teacher = ($class->teachers)[0]->name;
-                    $classroom = ($class->class)[0]->classroom->name;
-                    $tomorrow_class .= "\n{$class->name} @ {$classroom} ($teacher)\n第 {$class_time} 节";
+                    $teacher = $class['teachers'][0]['name'];
+                    $classroom = $class['class'][0]['classroom']['name'];
+                    $tomorrow_class .= "\n{$class['name']} @ {$classroom} ($teacher)\n第 {$class_time} 节";
                 }
 
                 return "$today_class \n $tomorrow_class";
