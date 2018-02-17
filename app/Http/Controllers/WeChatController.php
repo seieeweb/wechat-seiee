@@ -220,7 +220,7 @@ class JaccountApis
             foreach ($lessons as $lesson) {
                 foreach ($lesson->classes as $class) {
                     if ($class->schedule->week == $week && in_array($class->schedule->day, $days)) {
-                        if (array_key_exists($lesson->bsid, $ret)) {
+                        if (array_key_exists($lesson->bsid, $ret[$class->schedule->day])) {
                             $ret[$class->schedule->day][$lesson->bsid]['class'][] = $class->schedule->period;
                         } else {
                             $ret[$class->schedule->day][$lesson->bsid] = array(
