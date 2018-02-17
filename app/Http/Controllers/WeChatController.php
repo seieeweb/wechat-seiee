@@ -67,7 +67,7 @@ class WeChatController extends BaseController
                 $tomorrow = max($day - 6, 0) * (-7) + $day + 1;
                 $classes = $jaccount_object->getClasses($week, [$day, $tomorrow]);
 
-                return json_encode($classes[$day]);
+                return json_encode($classes);
 
                 $today_class = "今日 (第{$week}周 周{$day}) 课程:";
                 foreach ($classes[$day] as $class) {
