@@ -217,16 +217,16 @@ class JaccountApis
             }
             foreach ($lessons as $lesson) {
                 foreach ($lesson->classes as $class) {
-                    $ret_class = [];
                     if ($class->schedule->week == $week && in_array($class->schedule->day, $days)) {
-                        $ret_class[] = $class;
-                    }
-                    if ($ret_class != []) {
-                        $ret[$class->schedule->day][] = array(
-                            'name' => $lesson->name,
-                            'teachers' => $lesson->teachers,
-                            'class' => $ret_class
-                        );
+                        if (array_key_exists($lesson->bsid, $ret)) {
+                            $ret[$class->schedule->day][$lesson->bsid]['class'][] = $class->schedule->period;
+                        } else {
+                            $ret[$class->schedule->day][$lesson->bsid] = array(
+                                'name' => $lesson->name,
+                                'teachers' => $lesson->teachers,
+                                'class' => [$class->schedule->period]
+                            );;
+                        }
                     }
                 }
             }
