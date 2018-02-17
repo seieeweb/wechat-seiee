@@ -84,6 +84,8 @@ class WeChatController extends BaseController
                 }
 
                 return "$today_class\n\n$tomorrow_class";
+            } else {
+                return "对不起，暂时不支持\"{$content}\"命令";
             }
         } else {
             $bind_url = $this->generateBindUrl($from);
