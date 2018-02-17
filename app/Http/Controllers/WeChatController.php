@@ -14,6 +14,7 @@ use App\Jaccount;
 use EasyWeChat\Kernel\Messages\News;
 use EasyWeChat\Kernel\Messages\NewsItem;
 use Illuminate\Support\Facades\Storage;
+use EasyWeChat\Kernel\Messages\Image;
 
 class WeChatController extends BaseController
 {
@@ -115,8 +116,11 @@ class WeChatController extends BaseController
             } elseif (str_is('积分*', $content)) {
                 $exp = str_replace("积分", "", str_replace(" ", "", $content));
                 $contents = file_get_contents('http://127.0.0.1:5000/integrate?equation=' . urlencode($exp));
-                Storage::put(md5(str_random()) . '.jpg', $contents);
-                
+                $filename = md5(str_random()) . '.jpg';
+                Storage::put($filename, $contents);
+
+                return storage_path($filename);
+
             } else {
                 return "对不起，暂时不支持\"{$content}\"命令";
             }
@@ -142,16 +146,27 @@ class WeChatController extends BaseController
         Log::info('request arrived.'); # 注意：Log 为 Laravel 组件，所以它记的日志去 Laravel 日志看，而不是 EasyWeChat 日志
 
         $app = app('wechat.official_account');
-        $app->server->push(function($message){
+        $has_return = 0;
+        $image_path = '';
+
+        $app->server->push(function($message) use (&$has_return) {
             switch ($message['MsgType']) {
                 case 'event':
                     break;
                 case 'text':
-                    return $this->messageHandler($message['Content'], $message['FromUserName']);
+                    $ret = $this->messageHandler($message['Content'], $message['FromUserName']);
+                    if (!str_is('*.jpg*', $ret)) {
+                        $has_return = 1;
+                        return $ret;
+                    } else {
+                        $has_return = 2;
+                        $image_path = $ret;
+                    }
                     break;
                 case 'image':
                     break;
                 case 'voice':
+                    $has_return = 1;
                     return $this->messageHandler($message['Recognition'], $message['FromUserName']);
                     break;
                 case 'video':
@@ -165,6 +180,11 @@ class WeChatController extends BaseController
                     break;
             }
         });
+
+        if ($has_return == 2) {
+            $media = $app->media->uploadImage($image_path);
+            $app->server->push(new Image($media->media_id));
+        }
 
         return $app->server->serve();
     }
