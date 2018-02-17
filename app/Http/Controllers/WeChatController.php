@@ -140,7 +140,7 @@ class WeChatController extends BaseController
                 } else {
                     $times = (int)str_replace('阶', '', $lst[2]);
                 }
-                $contents = file_get_contents('http://127.0.0.1:5000/diff?equation=' . urlencode($exp)) . '&times=' . $times;
+                $contents = file_get_contents('http://127.0.0.1:5000/diff?equation=' . urlencode($exp) . '&times=' . $times);
                 $filename = md5(str_random()) . '.jpg';
                 Storage::disk('public')->put($filename, $contents);
 
