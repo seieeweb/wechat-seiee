@@ -75,7 +75,7 @@ class WeChatController extends BaseController
                     }
                     $class_time = substr($class_time, 0, -2);
                     $teacher = $class['teachers'][0]->name;
-                    $classroom = $class['class'][0]->classroom->name;
+                    $classroom = $class['class'][0]['classroom']['name'];
                     $today_class .= "\n{$class['name']} @ {$classroom} ($teacher)\n第 {$class_time} 节";
                 }
 
@@ -87,7 +87,7 @@ class WeChatController extends BaseController
                     }
                     $class_time = substr($class_time, 0, -2);
                     $teacher = $class['teachers'][0]->name;
-                    $classroom = $class['class'][0]->classroom->name;
+                    $classroom = $class['class'][0]['classroom']['name'];
                     $tomorrow_class .= "\n{$class['name']} @ {$classroom} ($teacher)\n第 {$class_time} 节";
                 }
 
