@@ -11,7 +11,8 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use EasyWeChat\Factory;
 use Log;
 use App\Jaccount;
-use EasyWeChat\Kernel\Messages\Article;
+use EasyWeChat\Kernel\Messages\News;
+use EasyWeChat\Kernel\Messages\NewsItem;
 
 class WeChatController extends BaseController
 {
@@ -58,14 +59,19 @@ class WeChatController extends BaseController
                 $card = $jaccount_object->getCardDetail();
                 $user = $jaccount_object->user_detail;
 
+                $items = [
+                    new NewsItem([
+                        'title'       => '校园卡信息',
+                        'description' => "{$user->name} (校园卡号 {$card->cardNo})\n余额: {$card->cardBalance} 元\n过渡余额: {$card->transBalance} 元",
+                        'url'         => '',
+                        'image'       => '',
+                    ]),
+                ];
 
-                $article = new Article();
-                $article->title   = '校园卡信息';
-                $article->author  = "{$user->name} (校园卡号 {$card->cardNo})";
-                $article->content = "余额: {$card->cardBalance} 元\n过渡余额: {$card->transBalance} 元";
+                $news = new News($items);
 
-                return $article;
-                
+                return $news;
+
             } elseif (str_is('*课程*', $content) || str_is('*课表*', $content) || str_is('*课程表*', $content)) {
                 $now = Carbon::now();
                 $week = $now->diffInWeeks(Carbon::parse(env('SEMESTER_START')));
