@@ -63,7 +63,7 @@ class WeChatController extends BaseController
                 //$day = Carbon::now()->dayOfWeek;
                 $week = 1;
                 $day = 2;
-                
+
                 $tomorrow = max($day - 6, 0) * (-7) + $day + 1;
                 $classes = $jaccount_object->getClasses($week, [$day, $tomorrow]);
 
@@ -193,8 +193,8 @@ class JaccountApis
                     }
                     if ($ret_class != []) {
                         $ret[$class->schedule->day][] = array(
-                            'name' => $lesson['name'],
-                            'teachers' => $lesson['teachers'],
+                            'name' => $lesson->name,
+                            'teachers' => $lesson->teachers,
                             'class' => $ret_class
                         );
                     }
@@ -223,8 +223,8 @@ class JaccountApis
                     }
                     if ($ret_class != []) {
                         $ret[$class->schedule->day][] = array(
-                            'name' => $lesson['name'],
-                            'teachers' => $lesson['teachers'],
+                            'name' => $lesson->name,
+                            'teachers' => $lesson->teachers,
                             'class' => $ret_class
                         );
                     }
