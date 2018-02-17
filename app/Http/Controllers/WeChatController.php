@@ -142,6 +142,6 @@ class JaccountApis
     public function getClasses()
     {
         $data = json_decode(file_get_contents('https://api.sjtu.edu.cn/v1/me/lessons?access_token=' . $this->jaccount->access_token));
-        return ($data->entities)[0];
+        return ($data);
     }
 }
