@@ -62,7 +62,7 @@ class WeChatController extends BaseController
                 $items = [
                     new NewsItem([
                         'title'       => '校园卡信息',
-                        'description' => "{$user->name} (校园卡号 {$card->cardNo})<hr>余额: {$card->cardBalance} 元\n过渡余额: {$card->transBalance} 元",
+                        'description' => "{$user->name} (校园卡号 {$card->cardNo})\n\n余额: {$card->cardBalance} 元\n过渡余额: {$card->transBalance} 元",
                         'url'         => '',
                         'image'       => '',
                     ]),
@@ -98,13 +98,36 @@ class WeChatController extends BaseController
                     $tomorrow_class .= "\n{$class['name']} @ {$classroom} ($teacher)\n第 {$class_time} 节";
                 }
 
-                return "$today_class\n\n$tomorrow_class";
+                $items = [
+                    new NewsItem([
+                        'title'       => '我的课程',
+                        'description' => "$today_class\n\n$tomorrow_class",
+                        'url'         => '',
+                        'image'       => '',
+                    ]),
+                ];
+
+                $news = new News($items);
+
+                return $news;
+
             } else {
                 return "对不起，暂时不支持\"{$content}\"命令";
             }
         } else {
             $bind_url = $this->generateBindUrl($from);
-            return "您尚未绑定 JAccount 账号。要使用全部服务，请到 {$bind_url} 进行绑定。";
+            $items = [
+                new NewsItem([
+                    'title'       => '绑定 JAccount',
+                    'description' => "您尚未绑定 JAccount 账号。要使用全部服务，请进行绑定。",
+                    'url'         => $bind_url,
+                    'image'       => '',
+                ]),
+            ];
+
+            $news = new News($items);
+
+            return $news;
         }
     }
 
