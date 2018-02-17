@@ -128,12 +128,12 @@ class JaccountApis
     public function getUserDetail()
     {
         $data = json_decode(file_get_contents('https://api.sjtu.edu.cn/v1/me/profile?access_token=' . $this->jaccount->access_token));
-        $this->user_detail = $data;
+        $this->user_detail = ($data->entities)[0];
     }
 
     public function getCardDetail()
     {
         $data = json_decode(file_get_contents('https://api.sjtu.edu.cn/v1/me/card?access_token=' . $this->jaccount->access_token));
-        return $data;
+        return ($data->entities)[0];
     }
 }
