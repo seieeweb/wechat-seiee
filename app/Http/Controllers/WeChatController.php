@@ -121,7 +121,7 @@ class WeChatController extends BaseController
 
                 $items = [
                     new NewsItem([
-                        'title'       => '',
+                        'title'       => '计算结果',
                         'description' => '',
                         'url'         => url('storage/' . $filename),
                         'image'       => url('storage/' . $filename),
