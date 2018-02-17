@@ -54,6 +54,8 @@ class JaccountController extends BaseController
 
                     $record->save();
 
+                    return view('success');
+
                 } catch (\League\OAuth2\Client\Provider\Exception\IdentityProviderException $e) {
 
                     // Failed to get the access token or user details.

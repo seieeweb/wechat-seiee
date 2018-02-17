@@ -54,7 +54,8 @@ class WeChatController extends BaseController
             if ($is_bind) {
                 $jaccount_object = new JaccountApis($from);
                 $card = $jaccount_object->getCardDetail();
-                return json_encode($card);
+                $user = $jaccount_object->user_detail;
+                return "{$user->name} (校园卡号 {$card->cardNo})\n余额: {$card->cardBalance} 元\n过渡余额: {$card->transBalance} 元";
             } else {
                 $bind_url = $this->generateBindUrl($from);
                 return "您尚未绑定 JAccount 账号, 请到 {$bind_url} 进行绑定。";
@@ -101,6 +102,7 @@ class JaccountApis
     {
         $this->jaccount = Jaccount::where('wechat_id', $wechat_id)->first();
         $this->refreshToken();
+        $this->getUserDetail();
     }
 
     public function refreshToken()
@@ -121,6 +123,12 @@ class JaccountApis
         $this->jaccount->access_token = $newAccessToken->getToken();
         $this->jaccount->save();
 
+    }
+
+    public function getUserDetail()
+    {
+        $data = json_decode(file_get_contents('https://api.sjtu.edu.cn/v1/me/profile?access_token=' . $this->jaccount->access_token));
+        $this->user_detail = $data;
     }
 
     public function getCardDetail()
