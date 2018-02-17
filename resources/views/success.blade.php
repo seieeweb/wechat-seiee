@@ -75,6 +75,9 @@
         <div class="links">
             <a href="#">校园卡</a>
             <a href="#">课程表</a>
+            <a href="#">积分 x</a>
+            <a href="#">求导 x 2阶</a>
+            <a href="#">泰勒展开 x</a>
         </div>
     </div>
 </div>

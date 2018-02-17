@@ -132,6 +132,50 @@ class WeChatController extends BaseController
 
                 return $news;
 
+            } elseif (str_is('求导*', $content)) {
+                $lst = explode(' ', $content);
+                $exp = $lst[1];
+                if (count($lst) == 2) {
+                    $times = 1;
+                } else {
+                    $times = (int)str_replace('阶', '', $lst[2]);
+                }
+                $contents = file_get_contents('http://127.0.0.1:5000/diff?equation=' . urlencode($exp)) . '&times=' . $times;
+                $filename = md5(str_random()) . '.jpg';
+                Storage::disk('public')->put($filename, $contents);
+
+                $items = [
+                    new NewsItem([
+                        'title'       => '计算结果',
+                        'description' => '',
+                        'url'         => url('storage/' . $filename),
+                        'image'       => url('storage/' . $filename),
+                    ]),
+                ];
+
+                $news = new News($items);
+
+                return $news;
+
+            } elseif (str_is('泰勒展开*', $content)) {
+                $exp = str_replace("泰勒展开", "", str_replace(" ", "", $content));
+                $contents = file_get_contents('http://127.0.0.1:5000/taylor?equation=' . urlencode($exp));
+                $filename = md5(str_random()) . '.jpg';
+                Storage::disk('public')->put($filename, $contents);
+
+                $items = [
+                    new NewsItem([
+                        'title'       => '计算结果',
+                        'description' => '',
+                        'url'         => url('storage/' . $filename),
+                        'image'       => url('storage/' . $filename),
+                    ]),
+                ];
+
+                $news = new News($items);
+
+                return $news;
+
             } else {
                 return "对不起，暂时不支持\"{$content}\"命令";
             }
