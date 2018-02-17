@@ -83,7 +83,7 @@ class WeChatController extends BaseController
                     $tomorrow_class .= "\n{$class['name']} @ {$classroom} ($teacher)\n第 {$class_time} 节";
                 }
 
-                return "$today_class \n $tomorrow_class";
+                return "$today_class\n\n$tomorrow_class";
             }
         } else {
             $bind_url = $this->generateBindUrl($from);
