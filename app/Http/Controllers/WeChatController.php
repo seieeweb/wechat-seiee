@@ -50,16 +50,18 @@ class WeChatController extends BaseController
     public function messageHandler($content, $from)
     {
         $is_bind = Jaccount::where('wechat_id', $from)->where('jaccount', '<>', '')->count();
-        if (str_is('*校园卡*', $content)) {
-            if ($is_bind) {
-                $jaccount_object = new JaccountApis($from);
+        if ($is_bind) {
+            $jaccount_object = new JaccountApis($from);
+            if (str_is('*校园卡*', $content)) {
                 $card = $jaccount_object->getCardDetail();
                 $user = $jaccount_object->user_detail;
                 return "{$user->name} (校园卡号 {$card->cardNo})\n余额: {$card->cardBalance} 元\n过渡余额: {$card->transBalance} 元";
-            } else {
-                $bind_url = $this->generateBindUrl($from);
-                return "您尚未绑定 JAccount 账号, 请到 {$bind_url} 进行绑定。";
+            } elseif (str_is('*课程*', $content) || str_is('*课表*', $content) || str_is('*课程表*', $content)) {
+                return json_encode($jaccount_object->getClasses());
             }
+        } else {
+            $bind_url = $this->generateBindUrl($from);
+            return "您尚未绑定 JAccount 账号。要使用全部服务，请到 {$bind_url} 进行绑定。";
         }
     }
 
@@ -134,6 +136,12 @@ class JaccountApis
     public function getCardDetail()
     {
         $data = json_decode(file_get_contents('https://api.sjtu.edu.cn/v1/me/card?access_token=' . $this->jaccount->access_token));
+        return ($data->entities)[0];
+    }
+
+    public function getClasses()
+    {
+        $data = json_decode(file_get_contents('https://api.sjtu.edu.cn/v1/me/lessons?access_token=' . $this->jaccount->access_token));
         return ($data->entities)[0];
     }
 }
