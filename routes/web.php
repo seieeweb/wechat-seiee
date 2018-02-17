@@ -16,3 +16,4 @@ Route::get('/', function () {
 });
 
 Route::any('/wechat', 'WeChatController@serve');
+Route::get('/jaccount/{verify_token}', 'JaccountController@bind');
