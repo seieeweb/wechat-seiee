@@ -57,7 +57,7 @@ class WeChatController extends BaseController
                 $user = $jaccount_object->user_detail;
                 return "{$user->name} (校园卡号 {$card->cardNo})\n余额: {$card->cardBalance} 元\n过渡余额: {$card->transBalance} 元";
             } elseif (str_is('*课程*', $content) || str_is('*课表*', $content) || str_is('*课程表*', $content)) {
-                return json_encode($jaccount_object->getClasses());
+                return json_encode(($jaccount_object->getClasses()->classes)[0]);
             }
         } else {
             $bind_url = $this->generateBindUrl($from);
