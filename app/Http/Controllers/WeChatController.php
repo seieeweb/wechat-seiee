@@ -13,6 +13,7 @@ use Log;
 use App\Jaccount;
 use EasyWeChat\Kernel\Messages\News;
 use EasyWeChat\Kernel\Messages\NewsItem;
+use Illuminate\Support\Facades\Storage;
 
 class WeChatController extends BaseController
 {
@@ -111,6 +112,11 @@ class WeChatController extends BaseController
 
                 return $news;
 
+            } elseif (str_is('积分*', $content)) {
+                $exp = str_replace("积分", "", str_replace(" ", "", $content));
+                $contents = file_get_contents('http://127.0.0.1:5000/integrate?equation=' . urlencode($exp));
+                Storage::put(md5(str_random()) . '.jpg', $contents);
+                
             } else {
                 return "对不起，暂时不支持\"{$content}\"命令";
             }
@@ -119,7 +125,7 @@ class WeChatController extends BaseController
             $items = [
                 new NewsItem([
                     'title'       => '绑定 JAccount',
-                    'description' => "您尚未绑定 JAccount 账号。要使用全部服务，请进行绑定。",
+                    'description' => "您尚未绑定 JAccount 账号。要使用全部服务，请单击进行绑定 >>",
                     'url'         => $bind_url,
                     'image'       => '',
                 ]),
