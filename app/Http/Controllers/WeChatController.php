@@ -49,7 +49,7 @@ class WeChatController extends BaseController
 
     public function messageHandler($content, $from)
     {
-        $is_bind = Jaccount::where('wechat_id', $from)->count();
+        $is_bind = Jaccount::where('wechat_id', $from)->where('jaccount', '<>', '')->count();
         if (str_is('*校园卡*', $content)) {
             if ($is_bind) {
                 $jaccount_object = new JaccountApis($from);
@@ -57,7 +57,7 @@ class WeChatController extends BaseController
                 return json_encode($card);
             } else {
                 $bind_url = $this->generateBindUrl($from);
-                return "您尚未绑定JAccount账号, 请到{{ $bind_url }}进行绑定。";
+                return "您尚未绑定 JAccount 账号, 请到 {$bind_url} 进行绑定。";
             }
         }
     }
