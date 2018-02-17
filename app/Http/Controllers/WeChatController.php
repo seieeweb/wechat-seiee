@@ -62,7 +62,7 @@ class WeChatController extends BaseController
                 $items = [
                     new NewsItem([
                         'title'       => '校园卡信息',
-                        'description' => "{$user->name} (校园卡号 {$card->cardNo})\n余额: {$card->cardBalance} 元\n过渡余额: {$card->transBalance} 元",
+                        'description' => "{$user->name} (校园卡号 {$card->cardNo})<hr>余额: {$card->cardBalance} 元\n过渡余额: {$card->transBalance} 元",
                         'url'         => '',
                         'image'       => '',
                     ]),
