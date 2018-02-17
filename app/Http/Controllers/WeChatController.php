@@ -117,9 +117,20 @@ class WeChatController extends BaseController
                 $exp = str_replace("积分", "", str_replace(" ", "", $content));
                 $contents = file_get_contents('http://127.0.0.1:5000/integrate?equation=' . urlencode($exp));
                 $filename = md5(str_random()) . '.jpg';
-                Storage::put($filename, $contents);
+                Storage::disk('public')->put($filename, $contents);
 
-                return storage_path($filename);
+                $items = [
+                    new NewsItem([
+                        'title'       => '',
+                        'description' => '',
+                        'url'         => url('storage/' . $filename),
+                        'image'       => url('storage/' . $filename),
+                    ]),
+                ];
+
+                $news = new News($items);
+
+                return $news;
 
             } else {
                 return "对不起，暂时不支持\"{$content}\"命令";
@@ -146,22 +157,13 @@ class WeChatController extends BaseController
         Log::info('request arrived.'); # 注意：Log 为 Laravel 组件，所以它记的日志去 Laravel 日志看，而不是 EasyWeChat 日志
 
         $app = app('wechat.official_account');
-        $has_return = 0;
-        $image_path = '';
 
         $app->server->push(function($message) use (&$has_return) {
             switch ($message['MsgType']) {
                 case 'event':
                     break;
                 case 'text':
-                    $ret = $this->messageHandler($message['Content'], $message['FromUserName']);
-                    if (!str_is('*.jpg*', $ret)) {
-                        $has_return = 1;
-                        return $ret;
-                    } else {
-                        $has_return = 2;
-                        $image_path = $ret;
-                    }
+                    return $this->messageHandler($message['Content'], $message['FromUserName']);
                     break;
                 case 'image':
                     break;
@@ -180,11 +182,6 @@ class WeChatController extends BaseController
                     break;
             }
         });
-
-        if ($has_return == 2) {
-            $media = $app->media->uploadImage($image_path);
-            $app->server->push(new Image($media->media_id));
-        }
 
         return $app->server->serve();
     }
