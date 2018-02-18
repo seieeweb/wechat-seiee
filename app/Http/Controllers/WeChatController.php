@@ -205,7 +205,7 @@ class WeChatController extends BaseController
                 }
 
                 $items[] = new NewsItem([
-                    'title'       => '',
+                    'title'       => '详细条目',
                     'description' => join("\n\n", $detail),
                     'url'         => '',
                     'image'       => '',
