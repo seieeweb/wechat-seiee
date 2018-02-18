@@ -191,25 +191,18 @@ class WeChatController extends BaseController
 
                 $data = json_decode($response->content);
 
-                $items = [
-                    new NewsItem([
-                        'title'       => '综合测评',
-                        'description' => $data->semester->year . '-' . ($data->semester->year + 1) . '学年 第' . $data->semester->semester .
-                            "学期\n" . $data->data->student->name . ': ' . $data->data->score . '分 (' . $data->data->rank . '名)',
-                    ]),
-                ];
-
                 $detail = [];
                 foreach ($data->data->all_items as $item) {
                     $detail[] = "{$item->item_code} {$item->quality->category}: {$item->comment}\n{$item->quality->credit} × {$item->score}";
                 }
 
-                $items[] = new NewsItem([
-                    'title'       => '详细条目',
-                    'description' => join("\n\n", $detail),
-                    'url'         => '',
-                    'image'       => '',
-                ]);
+                $items = [
+                    new NewsItem([
+                        'title'       => '综合测评',
+                        'description' => $data->semester->year . '-' . ($data->semester->year + 1) . '学年 第' . $data->semester->semester .
+                            "学期\n" . $data->data->student->name . ': ' . $data->data->score . '分 (' . $data->data->rank . "名)\n\n" . join("\n\n", $detail),,
+                    ]),
+                ];
 
                 $news = new News($items);
 
