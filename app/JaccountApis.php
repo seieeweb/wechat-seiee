@@ -9,6 +9,9 @@
 namespace App;
 
 use Log;
+use Carbon\Carbon;
+use App\Card;
+use App\User;
 
 /**
  * Jaccount的接口们
@@ -17,6 +20,7 @@ use Log;
  */
 class JaccountApis
 {
+
     public function __construct($wechat_id)
     {
         $this->jaccount = Jaccount::where('wechat_id', $wechat_id)->first();
@@ -54,6 +58,32 @@ class JaccountApis
     {
         $data = json_decode(file_get_contents('https://api.sjtu.edu.cn/v1/me/card?access_token=' . $this->jaccount->access_token));
         return ($data->entities)[0];
+    }
+
+    public function getCardTransaction($beginDate = null, $endDate = null)
+    {
+        if ($endDate == null) $endDate = Carbon::now()->getTimestamp();
+        if ($beginDate == null) $beginDate = strtotime('today midnight');
+        $data = json_decode(file_get_contents("https://api.sjtu.edu.cn/v1/me/card/transactions?beginDate={$beginDate}
+        &endDate={$endDate}&access_token={$this->jaccount->access_token}"));
+
+        $sum = 0;
+
+        foreach ($data->entities as $entity)
+        {
+            if ($entity->amount < 0) {
+                $sum -= $entity->amount;
+            }
+        }
+
+        $card = Card::firstOrNew(array('wechat_id' => $this->jaccount->wechat_id, 'date' => Carbon::now()->toDateString()));
+        $card->today_consumption = $sum;
+        $card->save();
+
+        return array(
+            "sum" => $sum,
+            'detail' => $data->entities,
+        );
     }
 
     public function getClasses($week = null, $days = [])
