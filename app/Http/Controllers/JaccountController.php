@@ -53,6 +53,7 @@ class JaccountController extends BaseController
                     $record->refresh_token = $accessToken->getRefreshToken();
                     $data = json_decode(file_get_contents('https://api.sjtu.edu.cn/v1/me/profile?access_token=' . $record->access_token));
                     $record->jaccount = ($data->entities)[0]->account;
+                    $record->student_id = ($data->entities)[0]->code;
 
                     $record->save();
 

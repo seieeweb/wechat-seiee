@@ -16,7 +16,7 @@ class Jaccount extends Model
      * @var array
      */
     protected $fillable = [
-        'wechat_id', 'jaccount', 'access_token', 'refresh_token', 'verify_token'
+        'wechat_id', 'jaccount', 'access_token', 'refresh_token', 'verify_token', 'student_id'
     ];
 
 }

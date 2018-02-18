@@ -15,6 +15,7 @@ use EasyWeChat\Kernel\Messages\News;
 use EasyWeChat\Kernel\Messages\NewsItem;
 use Illuminate\Support\Facades\Storage;
 use EasyWeChat\Kernel\Messages\Image;
+use Ixudra\Curl\Facades\Curl;
 
 class WeChatController extends BaseController
 {
@@ -39,6 +40,7 @@ class WeChatController extends BaseController
             $jaccount = new Jaccount(array(
                 'wechat_id' => $from,
                 'jaccount' => '',
+                'student_id' => '',
                 'access_token' => '',
                 'refresh_token' => '',
                 'verify_token' => $token,
@@ -175,6 +177,37 @@ class WeChatController extends BaseController
                 $news = new News($items);
 
                 return $news;
+
+            } elseif (str_is('素拓', $content) || str_is('综合测评', $content)) {
+                $student_id = Jaccount::where('wechat_id', $from)->first()->student_id;
+
+                $response = Curl::to('https://z.seiee.com/api/wechat/getScore')
+                    ->withData(array(
+                        'student_id' => $student_id,
+                        'sign' => md5(md5($student_id) . '!SEIEE$' . Carbon::now()->toDateString())
+                    ))
+                    ->post();
+
+                $data = json_decode($response->content);
+
+                $items = [
+                    new NewsItem([
+                        'title'       => '综合测评',
+                        'description' => $data->semester->year . '-' . ($data->semester->year + 1) . '学年 第' . $data->semester->semester .
+                            "学期\n" . $data->student->name . ': ' . $data->data->score . '分 (' . $data->data->rank . '名)',
+                        'url'         => '',
+                        'image'       => '',
+                    ]),
+                ];
+
+                foreach ($data->data->all_items as $item) {
+                    $items[] = new NewsItem([
+                        'title'       => '',
+                        'description' => "{$item->item_code} {$item->quality->category}: {$item->comment}\n{$item->quality->credit} × {$item->score}",
+                        'url'         => '',
+                        'image'       => '',
+                    ]);
+                }
 
             } else {
                 return "对不起，暂时不支持\"{$content}\"命令";

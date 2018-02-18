@@ -16,6 +16,7 @@ class CreateJaccountsTable extends Migration
         Schema::create('jaccounts', function (Blueprint $table) {
             $table->increments('id');
             $table->string('wechat_id')->unique();
+            $table->string('student_id');
             $table->string('jaccount');
             $table->string('access_token');
             $table->string('refresh_token');
