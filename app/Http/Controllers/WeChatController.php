@@ -85,7 +85,7 @@ class WeChatController extends BaseController
 
             } else {
                 $recommand = ['校园卡', '课程表', '积分', '求导', '泰勒展开', '素拓'];
-                $recommand = array_rand($recommand);
+                $recommand = $recommand[array_rand($recommand)];
 
                 return "对不起，暂时不支持\"{$content}\"命令。试试\"{$recommand}\"？";
 
