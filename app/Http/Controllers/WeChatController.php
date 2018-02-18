@@ -195,7 +195,7 @@ class WeChatController extends BaseController
                     new NewsItem([
                         'title'       => '综合测评',
                         'description' => $data->semester->year . '-' . ($data->semester->year + 1) . '学年 第' . $data->semester->semester .
-                            "学期\n" . $data->student->name . ': ' . $data->data->score . '分 (' . $data->data->rank . '名)',
+                            "学期\n" . $data->data->student->name . ': ' . $data->data->score . '分 (' . $data->data->rank . '名)',
                         'url'         => '',
                         'image'       => '',
                     ]),
