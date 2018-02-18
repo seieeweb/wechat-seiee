@@ -9,12 +9,12 @@ use Log;
 use App\Jaccount;
 use EasyWeChat\Kernel\Messages\News;
 use EasyWeChat\Kernel\Messages\NewsItem;
-use Illuminate\Support\Facades\Storage;
-use Ixudra\Curl\Facades\Curl;
-use App\JaccountApis;
+use App\MessageHandlers;
 
 class WeChatController extends BaseController
 {
+    private $handler;
+
     public function __construct()
     {
         $config = [
@@ -26,6 +26,8 @@ class WeChatController extends BaseController
         ];
 
         $app = Factory::officialAccount($config);
+
+        $this->handler = new MessageHandlers();
     }
 
     /**
@@ -66,25 +68,25 @@ class WeChatController extends BaseController
         $is_bind = Jaccount::where('wechat_id', $from)->where('jaccount', '<>', '')->count();
         if ($is_bind) {
             if (str_is('*校园卡*', $content)) {
-                return $this->cardHandler($content, $from);
+                return $this->handler->cardHandler($content, $from);
 
             } elseif (str_is('*课程*', $content) || str_is('*课表*', $content) || str_is('*课程表*', $content)) {
-                return $this->classTableHandler($content, $from);
+                return $this->handler->classTableHandler($content, $from);
 
             } elseif (str_is('积分*', $content)) {
-                return $this->integrateHandler($content, $from);
+                return $this->handler->integrateHandler($content, $from);
 
             } elseif (str_is('求导*', $content)) {
-                return $this->diffHandler($content, $from);
+                return $this->handler->diffHandler($content, $from);
 
             } elseif (str_is('泰勒展开*', $content)) {
-                return $this->taylorHandler($content, $from);
+                return $this->handler->taylorHandler($content, $from);
 
             } elseif (str_is('*素拓*', $content) || str_is('*综合测评*', $content)) {
-                return $this->zhcpHandler($content, $from);
+                return $this->handler->zhcpHandler($content, $from);
 
             } else {
-                $recommand = ['校园卡', '课程表', '积分', '求导', '泰勒展开', '素拓'];
+                $recommand = ['校园卡', '课程表', '积分 x^2', '求导 x^3 2阶', '泰勒展开 e^x', '素拓'];
                 $recommand = $recommand[array_rand($recommand)];
 
                 return "对不起，暂时不支持\"{$content}\"命令。试试\"{$recommand}\"？";
