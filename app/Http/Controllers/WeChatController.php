@@ -186,6 +186,7 @@ class WeChatController extends BaseController
                         'student_id' => $student_id,
                         'sign' => md5(md5($student_id) . '!SEIEE$' . Carbon::now()->toDateString())
                     ))
+                    ->returnResponseObject()
                     ->post();
 
                 $data = json_decode($response->content);
