@@ -178,7 +178,7 @@ class WeChatController extends BaseController
 
                 return $news;
 
-            } elseif (str_is('素拓', $content) || str_is('综合测评', $content)) {
+            } elseif (str_is('*素拓*', $content) || str_is('*综合测评*', $content)) {
                 $student_id = Jaccount::where('wechat_id', $from)->first()->student_id;
 
                 $response = Curl::to('https://z.seiee.com/api/wechat/getScore')
