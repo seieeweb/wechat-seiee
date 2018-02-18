@@ -78,6 +78,7 @@
             <a href="#">积分 x</a>
             <a href="#">求导 x 2阶</a>
             <a href="#">泰勒展开 x</a>
+            <a href="#">综合测评</a>
         </div>
     </div>
 </div>

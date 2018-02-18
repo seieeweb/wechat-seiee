@@ -201,6 +201,7 @@ class WeChatController extends BaseController
                         'title'       => '综合测评',
                         'description' => $data->semester->year . '-' . ($data->semester->year + 1) . '学年 第' . $data->semester->semester .
                             "学期\n" . $data->data->student->name . ': ' . $data->data->score . '分 (' . $data->data->rank . "名)\n\n" . join("\n\n", $detail),
+                        'url'         => "https://z.seiee.com/scores/search?student_no={$student_id}",
                     ]),
                 ];
 
