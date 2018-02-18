@@ -209,6 +209,10 @@ class WeChatController extends BaseController
                     ]);
                 }
 
+                $news = new News($items);
+
+                return $news;
+
             } else {
                 return "对不起，暂时不支持\"{$content}\"命令";
             }
