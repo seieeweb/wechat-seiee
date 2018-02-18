@@ -201,14 +201,17 @@ class WeChatController extends BaseController
                     ]),
                 ];
 
+                $detail = [];
                 foreach ($data->data->all_items as $item) {
-                    $items[] = new NewsItem([
-                        'title'       => '',
-                        'description' => "{$item->item_code} {$item->quality->category}: {$item->comment}\n{$item->quality->credit} × {$item->score}",
-                        'url'         => '',
-                        'image'       => '',
-                    ]);
+                    $detail[] = "{$item->item_code} {$item->quality->category}: {$item->comment}\n{$item->quality->credit} × {$item->score}";
                 }
+
+                $items[] = new NewsItem([
+                    'title'       => '',
+                    'description' => join("\n\n", $detail),
+                    'url'         => '',
+                    'image'       => '',
+                ]);
 
                 $news = new News($items);
 
