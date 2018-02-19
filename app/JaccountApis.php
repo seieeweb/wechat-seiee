@@ -64,8 +64,7 @@ class JaccountApis
     {
         if ($endDate == null) $endDate = Carbon::now()->getTimestamp();
         if ($beginDate == null) $beginDate = strtotime('today midnight');
-        $data = json_decode(file_get_contents("https://api.sjtu.edu.cn/v1/me/card/transactions?beginDate={$beginDate}
-        &endDate={$endDate}&access_token={$this->jaccount->access_token}"));
+        $data = json_decode(file_get_contents("https://api.sjtu.edu.cn/v1/me/card/transactions?beginDate={$beginDate}&endDate={$endDate}&access_token={$this->jaccount->access_token}"));
 
         $sum = 0;
 
