@@ -38,7 +38,7 @@ class MessageHandlers
             new NewsItem([
                 'title'       => '校园卡信息',
                 'description' => "{$user->name} (校园卡号 {$card->cardNo})\n\n余额: {$card->cardBalance} 元\n过渡余额: {$card->transBalance} 元\n\n
-                                    今日消费 {$today_detail->sum} 元, 击败了 {$percent}% 的用户！",
+                                    今日消费 {$today_detail->sum} 元, 击败了 % 的用户！",
                 'url'         => '',
                 'image'       => '',
             ]),
