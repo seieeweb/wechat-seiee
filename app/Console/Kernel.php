@@ -4,6 +4,8 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use App\JaccountApis;
+use App\Jaccount;
 
 class Kernel extends ConsoleKernel
 {
@@ -26,6 +28,14 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')
         //          ->hourly();
+
+        $jaccounts = Jaccount::where('jaccount', '<>', '')->get();
+        $schedule->call(function () use ($jaccounts) {
+            foreach ($jaccounts as $jaccount) {
+                $api = new JaccountApis($jaccount->wechat_id);
+                $api->getCardTransaction();
+            }
+        })->everyThirtyMinutes();
     }
 
     /**
