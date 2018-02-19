@@ -79,8 +79,13 @@ class JaccountApis
         $card->today_consumption = $sum;
         $card->save();
 
+        $today = Card::where('date', Carbon::now()->toDateString());
+        $all_record = $today->count();
+        $beat = $today->where('today_consumption', '<', $sum)->count();
+
         return array(
-            "sum" => $sum,
+            'sum' => $sum,
+            'beat' => round($beat / $all_record, 4) * 100,
             'detail' => $data->entities,
         );
     }
