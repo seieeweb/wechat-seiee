@@ -57,6 +57,12 @@ class WeChatController extends BaseController
 
     }
 
+    public function checkBind($from)
+    {
+        $is_bind = Jaccount::where('wechat_id', $from)->where('jaccount', '<>', '')->count();
+        return (bool)$is_bind;
+    }
+
     /**
      * 处理微信传来的消息
      * @param $content
@@ -65,47 +71,44 @@ class WeChatController extends BaseController
      */
     public function messageHandler($content, $from)
     {
-        $is_bind = Jaccount::where('wechat_id', $from)->where('jaccount', '<>', '')->count();
-        if ($is_bind) {
-            if (str_is('*校园卡*', $content)) {
-                return $this->handler->cardHandler($content, $from);
+        $bind_url = $this->generateBindUrl($from);
+        $items = [
+            new NewsItem([
+                'title'       => '绑定 JAccount',
+                'description' => "您尚未绑定 JAccount 账号。要使用全部服务，请单击进行绑定 >>",
+                'url'         => $bind_url,
+                'image'       => '',
+            ]),
+        ];
+        $bind_message = new News($items);
 
-            } elseif (str_is('*课程*', $content) || str_is('*课表*', $content) || str_is('*课程表*', $content)) {
-                return $this->handler->classTableHandler($content, $from);
+        if (str_is('*校园卡*', $content)) {
+            if (!$this->checkBind($from)) return $bind_message;
+            return $this->handler->cardHandler($content, $from);
 
-            } elseif (str_is('积分*', $content)) {
-                return $this->handler->integrateHandler($content, $from);
+        } elseif (str_is('*课程*', $content) || str_is('*课表*', $content) || str_is('*课程表*', $content)) {
+            if (!$this->checkBind($from)) return $bind_message;
+            return $this->handler->classTableHandler($content, $from);
 
-            } elseif (str_is('求导*', $content)) {
-                return $this->handler->diffHandler($content, $from);
+        } elseif (str_is('积分*', $content)) {
+            return $this->handler->integrateHandler($content, $from);
 
-            } elseif (str_is('泰勒展开*', $content)) {
-                return $this->handler->taylorHandler($content, $from);
+        } elseif (str_is('求导*', $content)) {
+            return $this->handler->diffHandler($content, $from);
 
-            } elseif (str_is('*素拓*', $content) || str_is('*综合测评*', $content)) {
-                return $this->handler->zhcpHandler($content, $from);
+        } elseif (str_is('泰勒展开*', $content)) {
+            return $this->handler->taylorHandler($content, $from);
 
-            } else {
-                $recommand = ['校园卡', '课程表', '积分 x^2', '求导 x^3 2阶', '泰勒展开 e^x', '素拓'];
-                $recommand = $recommand[array_rand($recommand)];
+        } elseif (str_is('*素拓*', $content) || str_is('*综合测评*', $content)) {
+            if (!$this->checkBind($from)) return $bind_message;
+            return $this->handler->zhcpHandler($content, $from);
 
-                return "对不起，暂时不支持\"{$content}\"命令。试试\"{$recommand}\"？";
-
-            }
         } else {
-            $bind_url = $this->generateBindUrl($from);
-            $items = [
-                new NewsItem([
-                    'title'       => '绑定 JAccount',
-                    'description' => "您尚未绑定 JAccount 账号。要使用全部服务，请单击进行绑定 >>",
-                    'url'         => $bind_url,
-                    'image'       => '',
-                ]),
-            ];
+            $recommand = ['校园卡', '课程表', '积分 x^2', '求导 x^3 2阶', '泰勒展开 e^x', '素拓'];
+            $recommand = $recommand[array_rand($recommand)];
 
-            $news = new News($items);
+            return "对不起，暂时不支持\"{$content}\"命令。试试\"{$recommand}\"？";
 
-            return $news;
         }
     }
 
